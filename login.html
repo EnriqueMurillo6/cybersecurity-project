@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #login-container {
+            width: 50%;
+            margin: 50px auto;
+            text-align: center;
+            border: 4px solid white;
+            padding: 20px;
+            background-color: #1c1c1c;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            font-size: large;
+            margin-bottom: 10px;
+            border: 2px solid white;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: large;
+            color: black;
+            background-color: #00ff7f;
+            border: 4px solid white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #00cc66;
+        }
+
+        .error {
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor de Login -->
+    <div id="login-container">
+        <h1>Iniciar Sesión</h1>
+        <input type="text" id="username" placeholder="Usuario" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <button id="login-btn">Iniciar Sesión</button>
+        <p id="error-msg" class="error">Usuario o contraseña incorrectos</p>
+    </div>
+
+    <script>
+        // Elementos del DOM
+        const loginButton = document.getElementById("login-btn");
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+        const errorMsg = document.getElementById("error-msg");
+
+        // Manejo del login
+        loginButton.addEventListener("click", async () => {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (username === "" || password === "") {
+                errorMsg.textContent = "Por favor, completa todos los campos.";
+                errorMsg.style.display = "block";
+                return;
+            }
+
+            // Hacer la solicitud de login al backend
+            try {
+                const response = await fetch('http://localhost:5000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Si el login es exitoso, redirigir a la página de tareas
+                    window.location.href = "http://localhost:5000/tasks.html";  // Cambia esta URL según tu lógica de tareas
+                } else {
+                    // Si las credenciales son incorrectas
+                    errorMsg.textContent = data.message || "Error al iniciar sesión.";
+                    errorMsg.style.display = "block";
+                }
+            } catch (error) {
+                console.error(error);
+                errorMsg.textContent = "Error en la conexión al servidor.";
+                errorMsg.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
